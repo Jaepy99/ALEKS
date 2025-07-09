@@ -43,6 +43,7 @@ attendance <- dt[[3]]
 aleks <- dt[[4]]
 
 ##### data prep #####
+### grade and lms
 grade.lms <- grade %>% 
   select(-중간1 & -중간2 & -중간3 & -기말 & -조별문제) %>% 
   left_join(lms, by = 'id') %>% 
@@ -55,7 +56,18 @@ grade.lms <- grade %>%
                                         "week_10", "week_11", "중간3", "week_13", 
                                         "week_14", "week_15", "기말")))
 
+### aleks
+aleks.prep <- aleks %>% 
+  pivot_longer(cols = -id, names_to = "module",
+               values_to = "master") %>% 
+  mutate(module = factor(module, levels = c("Module_1", "Module_2", "Module_3", 
+                                            "Module_4", "Module_5", "Module_6", 
+                                            "Module_7", "Module_8", "Module_9", 
+                                            "Module_10", "Module_11", "Module_12",
+                                            "Module_13", "Total_Grade")))
 
-dt.prep <- list(grade.lms, attendance, aleks)
+
+
+dt.prep <- list(grade.lms, attendance, aleks.prep)
 
 save(dt.prep, file = "25-spring.Rdata")

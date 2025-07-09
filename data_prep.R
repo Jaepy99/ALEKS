@@ -34,8 +34,6 @@ for(i in 1:length(sheet.names)){
   dt[[i]] <- read_excel("25-spring.xlsx", sheet = sheet.names[i])
 }
 
-save(dt, file = "25-spring.Rdata")
-
 library(dplyr)
 library(tidyr)
 
@@ -45,30 +43,19 @@ attendance <- dt[[3]]
 aleks <- dt[[4]]
 
 ##### data prep #####
-### grade
-grade.prep <- grade %>% 
-  filter(id != 99) %>% 
-  pivot_longer(cols = -c(id, 성적, 평점, 출석, aleks, 조별문제, total),
-               names_to = "test",
-               values_to = "score") %>% 
-  group_by(test) %>% 
-  mutate(std_score = scale(score)) %>% 
-  ungroup
-
-grade.prep$test <- factor(grade.prep$test, levels = c("중간1", "중간2", "중간3", "기말"))
-
-### lms
-lms.prep <- lms %>% 
+grade.lms <- grade %>% 
+  select(-중간1 & -중간2 & -중간3 & -기말 & -조별문제) %>% 
+  left_join(lms, by = 'id') %>% 
   filter(id != 99) %>% 
   select(-week_12) %>% 
-  pivot_longer(cols = -c(id, 숙제합계), names_to = "week", values_to = "score") %>% 
+  pivot_longer(cols = -c(id, 숙제합계, 성적, 평점, 출석, aleks, total),
+               names_to = "week", values_to = "score") %>% 
   mutate(week = factor(week, levels = c("week_2", "week_3", "week_5","중간1", 
                                         "week_6", "week_7", "중간2", "week_9", 
                                         "week_10", "week_11", "중간3", "week_13", 
                                         "week_14", "week_15", "기말")))
-lms.prep
 
 
+dt.prep <- list(grade.lms, attendance, aleks)
 
-
-
+save(dt.prep, file = "25-spring.Rdata")

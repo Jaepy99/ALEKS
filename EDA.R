@@ -3,7 +3,7 @@ load("25-spring.Rdata")
 
 grade.lms <- dt.prep[[1]]
 attendance <- dt.prep[[2]]
-aleks <- dt.prep[[3]]
+aleks.prep <- dt.prep[[3]]
 
 library(ggplot2)
 ### grade
@@ -34,3 +34,21 @@ grade.lms %>%
   ggplot(aes(x = week, y = score)) +
   geom_boxplot() +
   facet_wrap(~성적)
+
+grade.lms %>% 
+  filter(week != '중간1' & week != '중간2' & week != '중간3' & week != '기말') %>% 
+  ggplot(aes(x = week, y = score)) +
+  geom_boxplot() +
+  facet_wrap(~성적)
+
+aleks.prep %>% 
+  filter(module != "Total_Grade") %>% 
+  ggplot(aes(x = module, y = master)) +
+  geom_boxplot()
+
+grade %>%
+  select(id, total) %>% 
+  left_join(aleks.prep) %>% 
+  filter(module == "Total_Grade") %>% 
+  ggplot(aes(x = master, y = total)) +
+  geom_point()

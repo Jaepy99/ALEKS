@@ -29,45 +29,45 @@ grade.lms %>%
   geom_boxplot()
 
 # 시험 성적 분포
-grade.lms %>% 
-  filter(week == '중간1' | week == '중간2' | week == '중간3' | week == '기말') %>% 
+grade.lms %>%
+  filter(week == '중간1' | week == '중간2' | week == '중간3' | week == '기말') %>%
   ggplot(aes(x = week, y = score)) +
   geom_boxplot()
 
 # 등급별 시험 성적 분포
 grade.lms %>%
-  filter(week == '중간1' | week == '중간2' | week == '중간3' | week == '기말') %>% 
+  filter(week == '중간1' | week == '중간2' | week == '중간3' | week == '기말') %>%
   ggplot(aes(x = week, y = score)) +
   geom_boxplot() +
   facet_wrap(~성적)
 
 # 과제 점수 분포
-grade.lms %>% 
-  filter(week != '중간1' & week != '중간2' & week != '중간3' & week != '기말') %>% 
+grade.lms %>%
+  filter(week != '중간1' & week != '중간2' & week != '중간3' & week != '기말') %>%
   ggplot(aes(x = week, y = score)) +
   geom_boxplot() +
   facet_wrap(~성적)
 
 # aleks 모듈별 학습정도 비교
-aleks.prep %>% 
-  filter(module != "Total_Grade") %>% 
+aleks.prep %>%
+  filter(module != "Total_Grade") %>%
   ggplot(aes(x = module, y = master)) +
   geom_boxplot()
 
 # aleks 학습정도와 성적의 관계 시각화
 grade %>%
-  select(id, total) %>% 
-  left_join(aleks.prep) %>% 
-  filter(module == "Total_Grade") %>% 
+  select(id, total) %>%
+  left_join(aleks.prep) %>%
+  filter(module == "Total_Grade") %>%
   ggplot(aes(x = master, y = total)) +
   geom_point()
 
 ##### clustering #####
 library(cluster)
 ### Euclidean
-grade.eu <- grade.lms %>% 
-  pivot_wider(names_from = week, values_from = score, values_fill = NA) %>% 
-  select(-id & -성적 & -평점 & -숙제합계 & -total) %>% 
+grade.eu <- grade.lms %>%
+  pivot_wider(names_from = week, values_from = score, values_fill = NA) %>%
+  select(-id & -성적 & -평점 & -숙제합계 & -total) %>%
   dist(method = "euclidean")
 
 # 계층적 군집분석
@@ -77,7 +77,7 @@ grade.eu.hc <- hclust(grade.eu, method = "ward.D2")
 plot(grade.eu.hc, labels = F, main = "Dendrogram by Euclidean")
 
 ### k = 3
-eu.cl <- grade.lms %>% 
+eu.cl <- grade.lms %>%
   pivot_wider(names_from = week, values_from = score, values_fill = NA)
 eu.cl$cluster <- cutree(grade.eu.hc, k = 3)
 
@@ -91,9 +91,9 @@ mean(eu.sil[,3])
 ### Correlation
 library(proxy)
 
-grade.cor <- grade.lms %>% 
-  pivot_wider(names_from = week, values_from = score, values_fill = NA) %>% 
-  select(-id & -성적 & -평점 & -숙제합계 & -total) %>% 
+grade.cor <- grade.lms %>%
+  pivot_wider(names_from = week, values_from = score, values_fill = NA) %>%
+  select(-id & -성적 & -평점 & -숙제합계 & -total) %>%
   dist(method = "correlation")
 
 # 계층적 군집분석
@@ -103,7 +103,7 @@ grade.cor.hc <- hclust(grade.cor, method = "ward.D2")
 plot(grade.cor.hc, labels = F, main = "Dendrogram by Correlation")
 
 ### k = 3
-cor.cl <- grade.lms %>% 
+cor.cl <- grade.lms %>%
   pivot_wider(names_from = week, values_from = score, values_fill = NA)
 cor.cl$cluster <- cutree(grade.cor.hc, k = 3)
 

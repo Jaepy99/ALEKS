@@ -26,20 +26,29 @@ grade.lms %>%
 # 성적과 과제
 grade.lms %>%
   ggplot(aes(x = 성적, y = 숙제합계)) +
-  geom_boxplot()
+  geom_boxplot() +
+  ggtitle("25-1")
+
+grade$성적.f <- factor(grade$성적,
+                     levels = c("A+", "A0", "B+", "B0", "C+", "C0"),
+                     ordered = T)
+cor.test(as.numeric(grade$성적.f), grade$조별문제, method = "spearman")
+
 
 # 시험 성적 분포
 grade.lms %>%
   filter(week == '중간1' | week == '중간2' | week == '중간3' | week == '기말') %>%
   ggplot(aes(x = week, y = score)) +
-  geom_boxplot()
+  geom_boxplot()+
+  ggtitle("25-1")
 
 # 등급별 시험 성적 분포
 grade.lms %>%
   filter(week == '중간1' | week == '중간2' | week == '중간3' | week == '기말') %>%
   ggplot(aes(x = week, y = score)) +
   geom_boxplot() +
-  facet_wrap(~성적)
+  facet_wrap(~성적) +
+  ggtitle("25-1")
 
 # 과제 점수 분포
 grade.lms %>%
@@ -55,12 +64,14 @@ aleks.prep %>%
   geom_boxplot()
 
 # aleks 학습정도와 성적의 관계 시각화
+m1 <- lm(total ~ aleks, grade)
+summary(m1)
+
 grade %>%
-  select(id, total) %>%
-  left_join(aleks.prep) %>%
-  filter(module == "Total_Grade") %>%
-  ggplot(aes(x = master, y = total)) +
-  geom_point()
+  ggplot(aes(x = aleks, y = total)) +
+  geom_point() +
+  geom_abline() +
+  ggtitle("25-1")
 
 ##### clustering #####
 library(cluster)
